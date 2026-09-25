@@ -1,0 +1,20 @@
+{
+  "status": "proposed_shared_recipe_not_launched",
+  "arms": ["base", "soup", "regmeanpp", "featcal", "tcr"],
+  "training_seeds": [1000, 1001, 1002],
+  "lora_init_seed": 3407,
+  "steps": 5000,
+  "save_freq": 500,
+  "eval_grid": [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000],
+  "global_batch": 128,
+  "learning_rate": 0.0003,
+  "warmup_steps": 500,
+  "decay_lr": 0.0000025,
+  "lora_rank": 64,
+  "lora_alpha": 64,
+  "eval_seed": 274001,
+  "episodes_per_task": 10,
+  "threshold_percent": null,
+  "dataset_repo": "lerobot/libero",
+  "suites": ["libero_spatial", "libero_object", "libero_goal", "libero_10"]
+}

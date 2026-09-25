@@ -1,0 +1,7 @@
+{
+  "base": {"identity": "common theta0, LIBERO 200-step adaptation; not untouched official pi05_base", "model_sha256": "f2165fad32a4b431ca1488a5b886f6738be9e8b480298ecc9e0b55d87d26f365"},
+  "soup": {"identity": "main-comparison model-soups repeat-shared attempt-02-peft-safe-v2", "model_sha256": "a92aacc43146dc41663c0057f2999bd90252fb3fb316ef963f165be67e1be01a"},
+  "regmeanpp": {"identity": "main-comparison static-observation regmeanpp_spectral_smoothing attempt-01", "model_sha256": "fea99a8c09f8ca16bf8a2889bac659aba86bcbf831ef422e8c0a30115bccffb2"},
+  "featcal": {"identity": "main-comparison static-observation featcal", "model_sha256": "b0da07eda2a9ab4485f555f694d31afe08c40a39d6e3bfd44e9b9d8d006b0114"},
+  "tcr": {"identity": "main-comparison c_e / tcr_r03; historical selection score 322/400, all repeats start from this checkpoint", "model_sha256": "3e3a55ce0acd04b3ee1e180eda2a6109b0ef6d0ea4e717f6052a27829adfce95"}
+}

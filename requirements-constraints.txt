@@ -1,0 +1,15 @@
+# Versions from the working local pi0.5 environment; CUDA wheels installed separately.
+torch==2.7.1
+torchvision==0.22.1
+transformers==5.5.4
+peft==0.20.0
+accelerate==1.14.0
+datasets==4.8.5
+huggingface-hub==1.28.0
+draccus==0.11.6
+torchcodec==0.3.0
+hf-libero==0.1.4
+robosuite==1.4.0
+mujoco==3.8.1
+numpy==2.2.6
+safetensors==0.5.3
