@@ -27,6 +27,24 @@ def curve_metrics(grid, scores, threshold):
     return {"S0": scores[0], "SB": scores[-1], "nAUC": area, "T_tau": crossing}
 
 
+def mean_std(values):
+    return {"mean": statistics.mean(values), "std": statistics.stdev(values)}
+
+
+def summarize_repeats(repeats, suites):
+    """Compute paired changes before aggregating; never subtract SDs."""
+    return {"repeats": repeats, "summary": {
+        metric: mean_std([r[metric] for r in repeats]) for metric in ("S0", "SB", "nAUC")},
+        "delta_success_pp": mean_std([r["SB"] - r["S0"] for r in repeats]),
+        "per_suite_summary": {
+            suite: {
+                "S0": mean_std([r["per_suite"][suite][0] for r in repeats]),
+                "SB": mean_std([r["per_suite"][suite][-1] for r in repeats]),
+                "delta_pp": mean_std([r["per_suite"][suite][-1] - r["per_suite"][suite][0] for r in repeats]),
+            } for suite in suites},
+        "T_tau_per_repeat": [r["T_tau"] for r in repeats]}
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--results", type=Path, required=True)
@@ -51,10 +69,7 @@ def main():
             means = [statistics.mean(values) for values in zip(*suites.values())]
             repeats.append({"seed": seed, "curve": means, "per_suite": suites,
                             **curve_metrics(cfg["eval_grid"], means, cfg["threshold_percent"])})
-        results[arm] = {"repeats": repeats, "summary": {
-            metric: {"mean": statistics.mean(r[metric] for r in repeats),
-                     "std": statistics.stdev(r[metric] for r in repeats)} for metric in ("S0", "SB", "nAUC")},
-            "T_tau_per_repeat": [r["T_tau"] for r in repeats]}
+        results[arm] = summarize_repeats(repeats, cfg["suites"])
     write_json(args.output, {"recipe": cfg, "results": results})
     print("Complete paired grids summarized. Censored T_tau is not averaged as a number.")
 

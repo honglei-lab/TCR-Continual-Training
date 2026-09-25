@@ -125,6 +125,65 @@ CUDA_VISIBLE_DEVICES=0 python scripts/evaluate.py \
 附录分套件表直接使用同一数据的 `S_k(0) → S_k(B)` 和差值，无需另跑实验。
 训练 loss、离线动作 MSE、视频可作辅助核查，但均不能替代闭环成功率。
 
+### 5.1 精确公式、单位和跨 seed 汇总
+
+记训练 seed 为 r，套件为 k，任务为 j，回合为 e，更新步数为 t；
+`y[r,k,j,e,t]` 是原始 JSON 中的布尔成功标记，成功为 1、失败为 0。
+以下所有成功率都用 **0–100 的百分数**，不是 0–1：
+
+```text
+S[r,k](t) = 100 × sum(j=1..10, e=1..10, y[r,k,j,e,t]) / 100
+S[r](t)   = (S[r,Spatial](t) + S[r,Object](t)
+             + S[r,Goal](t) + S[r,Long](t)) / 4
+          = 100 × 本点总成功回合数 / 400
+
+固定网格：0 = t[0] < t[1] < ... < t[m] = B
+nAUC[r] = sum(i=1..m,
+              (t[i] - t[i-1]) × (S[r](t[i]) + S[r](t[i-1])) / 2) / B
+
+T_tau[r] = min {t[i] : S[r](t[i]) >= tau}
+           无已测点达标则记字符串 ">B"（例如 ">5000"）
+
+Delta[r,k] = S[r,k](B) - S[r,k](0)    # 单位：百分点 pp
+```
+
+nAUC 不再除以 100，也不把网格点简单做算术平均；步数不等距时必须按区间长度加权。
+例如网格 `[0, 500, 1500]`、成功率 `[40, 60, 80]`，nAUC 为
+`(500×50 + 1000×70)/1500 = 63.3333%`；若阈值为 70%，达标步数为 **1500**，
+不能插值成 1000。此例仅说明算法，不为正式实验选择阈值。
+
+先对每个训练 seed 单独计算指标，再汇总 R=3 个训练重复：
+
+```text
+mean(x) = sum(r=1..R, x[r]) / R
+std(x)  = sqrt(sum(r=1..R, (x[r] - mean(x))^2) / (R - 1))
+```
+
+报告 `mean ± std`，这里是**样本标准差（ddof=1）**，不是标准误、置信区间，
+也不是对 4 个套件求标准差。计算时保留完整精度，填表时最后四舍五入到两位小数。
+Delta 的标准差应先求各 seed 的配对差，再求 std；不能用两个标准差相减。
+附录每套件填写 `mean(S_k(0)) → mean(S_k(B)) (带正负号的 mean(Delta_k) pp)`。
+T_tau 保留三个 seed 的结果（例如 `[1000, 1500, ">5000"]`）；存在未达标时不要硬算均值。
+阈值未定时返回 null，论文该项继续待定，不影响其他指标。
+
+### 5.2 汇总 JSON 的取值位置
+
+运行下一节命令后，服务器已直接算好正文和附录所需值，无需手工从日志重算：
+
+| 填表内容 | `results.<arm>` 下的字段 |
+|---|---|
+| Table 6 的 S(0) | `summary.S0.mean` / `summary.S0.std` |
+| Table 6 的 S(B) | `summary.SB.mean` / `summary.SB.std` |
+| Table 6 的 nAUC | `summary.nAUC.mean` / `summary.nAUC.std` |
+| Table 6 的 T_tau | `T_tau_per_repeat`，按训练 seed 顺序保留 |
+| 附录每套件训练前后 | `per_suite_summary.<suite>.S0` / `.SB` |
+| 附录每套件变化（pp） | `per_suite_summary.<suite>.delta_pp` |
+| 总成功率变化（辅助） | `delta_success_pp` |
+| 每个 seed 的完整曲线 | `repeats[].curve` / `repeats[].per_suite`，与配置 eval_grid 一一对应 |
+
+每个汇总统计量均包含 `mean` 和 `std`。缺少中间点时，先回传原始起点/终点结果，
+正式全网格汇总器仍会拒绝产出不完整的 Table 6；不借此跳过缺失点。
+
 ## 6. 汇总和回传
 
 必须保留以下目录结构；四个 suite 子目录中都应有原始 `eval_info.json`：
