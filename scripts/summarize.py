@@ -43,6 +43,9 @@ def main():
             suites = {s: [] for s in cfg["suites"]}
             for step in cfg["eval_grid"]:
                 folder = args.results / arm / f"seed{seed}" / f"step{step:06d}"
+                receipt = read_json(folder / "evaluation_receipt.json")
+                if receipt["recipe"] != cfg:
+                    raise ValueError(f"Evaluation protocol differs from shared recipe: {folder}")
                 for suite in suites:
                     suites[suite].append(suite_score(folder / suite / "eval_info.json", suite, cfg["episodes_per_task"]))
             means = [statistics.mean(values) for values in zip(*suites.values())]

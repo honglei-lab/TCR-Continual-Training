@@ -2,7 +2,7 @@
 
 LeRobot is vendored under its Apache-2.0 license from local source commit
 `bf31dd794ffb4f87380aba3912f64421e8352d3c` (version 0.6.2).
-Only `src/`, packaging metadata, README, and LICENSE are included, not experiment
+Only `src/`, its linked documentation, packaging metadata, README, and LICENSE are included, not experiment
 outputs, environments, datasets, Git history, or training weights.
 
 Four source files include existing local training fixes: `scripts/lerobot_train.py`,

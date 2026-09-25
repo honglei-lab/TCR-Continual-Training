@@ -10,6 +10,7 @@
 - 原实验 Python 3.12 环境中的关键依赖版本、torchcodec、π0.5 与训练模块导入检查通过。
   FFmpeg 6 的 lib 路径需要放入 LD_LIBRARY_PATH；未配置时 torchcodec 导入失败。
 - vendored LeRobot 构建元数据 dry-run 通过（`pip install --dry-run --no-deps`）。
+- vendored LeRobot wheel 实际构建成功（约 1.85 MB）；构建产物仅保存在忽略的 local/ 目录。
 - Python 编译检查、shell 语法检查、6 项轻量单元测试通过。
 
 没有完成、不能据此声称通过：

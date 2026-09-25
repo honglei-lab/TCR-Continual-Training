@@ -146,7 +146,7 @@ python scripts/summarize.py \
 ```
 
 目录必须为 `arm/seed1000/step000000/libero_spatial/eval_info.json` 等。
-脚本要求五组全部 seed 与全部评测点完整；缺失会报错，不插值或补零。
+脚本要求五组全部 seed 与全部评测点完整，并核对 evaluation_receipt.json 中的统一配置；缺失会报错，不插值或补零。
 计算 S(0)、S(B)、梯形 nAUC、各 suite 曲线；Tτ 未达到记 `>B`，不删失败 seed。
 
 ## 6. 需要传回哪些文件
