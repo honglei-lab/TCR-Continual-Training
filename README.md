@@ -4,6 +4,9 @@
 五组统一重新训练：**Base、Model Soups、RegMean++、FeatCal、TCR**。
 没有单专家组；不重新融合；不训练 FastWAM/OpenVLA；不包含历史实验目录。
 
+**训练服务器拿到各步 checkpoint 后，按 [Table 6 评测执行单](docs/EVALUATION.md) 运行。**
+每个点测四套件 400 回合；该文档包含可复制命令、并行方式、指标定义和回传清单。
+
 ## 当前状态
 
 代码已具备独立训练、评测与汇总入口；本地验证范围见 [验证记录](docs/VALIDATION.md)。初始化权重上传目标为
@@ -130,7 +133,8 @@ CUDA_VISIBLE_DEVICES=0 python scripts/evaluate.py \
 
 核对打印命令后加 `--execute`。step>0 时 checkpoint 换为
 `outputs/formal/base/seed1000/train/checkpoints/000500/pretrained_model` 等。
-初始模型是 dense；训练输出是 **adapter + 四个完整接口模块**，评测需原始初始化仍位于
+训练 checkpoint 不一定附带 tokenizer；可加 `--tokenizer checkpoints/initializations-v1/base/tokenizer`
+显式指定对应初始化的 tokenizer。初始模型是 dense；训练输出是 **adapter + 四个完整接口模块**，评测需原始初始化仍位于
 adapter_config.json 所记录的位置。转移服务器时也需迁移对应 dense 初始化并修正
 副本中的 base_model_name_or_path；不能把 adapter 当成完整 π0.5 权重。
 

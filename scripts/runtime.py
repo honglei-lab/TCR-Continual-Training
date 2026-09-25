@@ -25,7 +25,9 @@ def local_tokenizer():
     original = TokenizerProcessorStep.__post_init__
 
     def post_init(self):
-        if self.tokenizer_name == "google/paligemma-3b-pt-224":
+        # A saved training processor may contain the old server's local path.
+        # PALIGEMMA_TOKENIZER_PATH is an explicit override for this pi05 package.
+        if self.tokenizer_name is not None and self.tokenizer is None:
             self.tokenizer_name = str(path)
         original(self)
 
